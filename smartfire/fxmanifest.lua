@@ -8,7 +8,8 @@ version '1.0.0'
 -- Shared files
 shared_scripts {
     'shared/config.lua',
-    'shared/utils.lua'
+    'shared/utils.lua',
+    'core/fire_manager.lua'
 }
 
 -- Client files
@@ -25,11 +26,6 @@ server_scripts {
     'server/fire_handler.lua',
     'server/sync.lua',
     'server/commands.lua'
-}
-
--- Core files
-files {
-    'core/fire_manager.lua'
 }
 
 dependencies {
