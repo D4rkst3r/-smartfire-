@@ -114,8 +114,40 @@ function Utils.ValidateFireParams(x, y, z, radius, dimension)
     return #errors == 0, errors
 end
 
--- Get ground Z coordinate
+-- Get ground Z coordinate - Client/Server compatible
 function Utils.GetGroundZ(x, y, z)
-    local retval, groundZ = GetGroundZFor_3dCoord(x, y, z, false)
-    return retval and groundZ or z
+    if IsDuplicityVersion() then
+        -- Server side - just return the provided Z or a reasonable ground level
+        return z or 30.0
+    else
+        -- Client side - use native function
+        local retval, groundZ = GetGroundZFor_3dCoord(x, y, z, false)
+        return retval and groundZ or z
+    end
+end
+
+-- Server-specific utilities
+if IsDuplicityVersion() then
+    -- Check for water on server side (simplified)
+    function Utils.IsInWater(x, y, z)
+        -- This is a simplified check - in a real implementation you might want to
+        -- maintain a list of known water areas or use a more sophisticated method
+        -- For now, we'll assume areas below sea level might be water
+        return z < 0.0
+    end
+
+    -- Get a reasonable ground level for server-side calculations
+    function Utils.GetEstimatedGroundLevel(x, y, z)
+        -- For most of the GTA map, ground level is around 30-50
+        -- This is a fallback when we can't get precise ground coordinates
+        local mapCenterDistance = math.sqrt(x * x + y * y)
+
+        if mapCenterDistance < 2000 then
+            return 30.0  -- City area
+        elseif mapCenterDistance < 3000 then
+            return 50.0  -- Suburban/hills
+        else
+            return 100.0 -- Mountains/far areas
+        end
+    end
 end

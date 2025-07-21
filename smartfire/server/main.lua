@@ -64,11 +64,17 @@ function SmartFire.CreateFire(x, y, z, radius, dimension, lifetime, fireType)
     local fireId = "fire_" .. SmartFire.NextFireId
     SmartFire.NextFireId = SmartFire.NextFireId + 1
 
+    -- Use server-compatible ground Z calculation
+    local groundZ = z
+    if Utils.GetEstimatedGroundLevel then
+        groundZ = Utils.GetEstimatedGroundLevel(x, y, z)
+    end
+
     local fireData = {
         id = fireId,
         x = x,
         y = y,
-        z = Utils.GetGroundZ(x, y, z),
+        z = groundZ,
         radius = radius or Config.Fire.DefaultRadius,
         dimension = dimension or Config.DefaultDimension,
         createdAt = GetGameTimer(),
